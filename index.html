@@ -88,6 +88,16 @@ label.fl{display:block;font-weight:500;margin:10px 0 6px}label.fl small{color:va
 textarea{width:100%;font:16px/1.4 Inter,system-ui,sans-serif;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;resize:none}
 textarea:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 .linkb{background:none;border:0;padding:0;color:var(--acc);font-weight:500;min-height:44px;text-align:left}
+.player{position:relative;flex:1;min-height:240px;margin:14px 0 12px;border-radius:16px;overflow:hidden;background:#0b0910 center/cover no-repeat;display:flex;flex-direction:column;justify-content:flex-end}
+.player .scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(11,9,16,.94) 0%,rgba(11,9,16,.55) 55%,rgba(11,9,16,.25) 100%)}
+.player .vq{position:relative;color:#f6f1ea;font:400 clamp(26px,7vw,34px)/1.16 'Instrument Serif',serif;margin:0 18px 14px;text-wrap:balance}
+.playb{position:relative;align-self:flex-start;display:flex;align-items:center;gap:8px;min-height:48px;margin:0 18px 18px;padding:10px 20px 10px 16px;border:0;border-radius:999px;background:var(--acc);color:#fff;font-weight:500}
+.playb svg{width:22px;height:22px}
+.player.on{flex:none;aspect-ratio:16/9;min-height:0;background:#000}
+.player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.pinned{display:none;font:400 clamp(24px,6.5vw,30px)/1.2 'Instrument Serif',serif;margin:6px 0 10px;padding-left:14px;border-left:2px solid var(--acc);border-radius:0;text-wrap:balance}
+.playing .pinned{display:block}.playing .in{justify-content:center}
+.capnote{display:none;font-size:13px;color:var(--soft);margin:0 0 6px}.playing .capnote{display:block}
 @media(prefers-reduced-motion:reduce){.go .arc .up{animation:none}.toast{transition:none}}
 </style>
 </head>
@@ -133,16 +143,19 @@ const vid=c.vid?`<a class="vid" href="https://www.youtube.com/results?search_que
 const on=saved.includes(c.id),acts=vid+`<div class="acts"><span class="src">${esc(c.src)}</span><button class="act${on?" on":""}" data-save="${c.id}" aria-label="Save">${I.heart}</button><button class="act" data-copy="${c.id}" aria-label="Copy text">${I.copy}</button></div>`;
 if(c.k==="story")return `<section class="card"><div class="in"><div class="kind"><i></i>Story · ${esc(c.who)}</div><h2>${esc(c.h)}</h2>
 <div class="beat"><span>The hard part</span><div>${esc(c.hard)}</div></div><div class="beat"><span>The turn</span><div>${esc(c.turn)}</div></div><div class="beat win"><span>What happened</span><div>${esc(c.win)}</div></div>${arc}${acts}</div></section>`;
+if(c.yt)return `<section class="card" data-id="${c.id}"><div class="in"><div class="kind"><i></i>Speech · ${esc(c.who)}</div>${posterHTML(c)}<p class="pinned">${esc(c.q)}</p><p class="capnote">Captions are on. Tap CC on the video to turn them off.</p><div class="who">${esc(c.who)}</div>${acts}</div></section>`;
 return `<section class="card"><div class="in"><div class="kind"><i></i>${c.k==="speech"?"Speech":"Quote"}</div><p class="q${c.q.length>110?" long":""}">${esc(c.q)}</p><div class="who">${esc(c.who)}</div>${arc}${acts}</div></section>`}
 
+function posterHTML(c){return `<div class="player" style="background-image:url(https://i.ytimg.com/vi/${c.yt}/hqdefault.jpg)"><div class="scrim"></div><p class="vq">${esc(c.q)}</p><button class="playb" data-play="${c.id}">${I.play}Watch the speech</button></div>`}
+function stopPlayer(card){const c=CARDS.find(x=>x.id===card.dataset.id);if(!c)return;card.classList.remove("playing");card.querySelector(".player").outerHTML=posterHTML(c)}
 function pauseHTML(n){const nt=part==="night"||part==="evening",g=goal?` Now take it to: <em>${esc(goal)}</em>`:"";
 return `<section class="card pause"><div class="in"><div class="kind"><i></i>${n} cards in</div><h2>${nt?"That's a lot of proof.":"You've got what you need."}</h2><p>Every one of them had a stretch that felt like yours.${g}</p><div class="stackb"><button class="btn pri" data-more>Keep going</button><button class="btn" data-night>${nt?"I'm done for tonight":"Go do the hard part"}</button></div></div></section>`}
 function helloHTML(){const[h,l]=HELLO[part],s=streak.n>1?`Day ${streak.n} in a row. Showing up is the whole game.`:"Day one. Come back tomorrow and start a streak.";
-return `<section class="card hello"><div class="in"><div class="kind"><i></i>${h}</div><h2>${l}</h2>${goal?`<p class="goaltxt">${esc(goal)}</p><div class="src">Your goal</div>`:`<button class="linkb" data-edit>Write your goal in one line</button>`}<p class="soft">${s}</p>${arc}<div class="acts"><span class="src">Swipe up for today's proof</span></div></div></section>`}
+return `<section class="card hello"><div class="in"><div class="kind"><i></i>${h}</div><h2>${l}</h2>${goal?`<p class="goaltxt">${esc(goal)}</p><div class="src">Your goal</div>`:`<p class="goaltxt">${esc(THEMES.filter(t=>chosen.includes(t.id)).map(t=>t.label).join(" · "))}</p><div class="src">Today's proof is about</div>`}<p class="soft">${s}</p>${arc}<div class="acts"><span class="src">Swipe up for today's proof</span></div></div></section>`}
 
 function addBatch(feed){let p=shuffle(pool());if(!p.length)return;const batch=p.slice(0,10);shown+=batch.length;feed.insertAdjacentHTML("beforeend",batch.map(cardHTML).join("")+pauseHTML(shown));watch(feed)}
 let io;
-function watch(feed){io=io||new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("go")}),{threshold:.6});feed.querySelectorAll(".card:not([data-w])").forEach(c=>{c.dataset.w=1;io.observe(c)})}
+function watch(feed){io=io||new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("go");else if(e.target.classList.contains("playing"))stopPlayer(e.target)}),{threshold:.6});feed.querySelectorAll(".card:not([data-w])").forEach(c=>{c.dataset.w=1;io.observe(c)})}
 
 function render(){
 if(view==="onboard"){app.innerHTML=`<div class="screen"><div class="logo">Proof<b>.</b></div><h1>What are you working toward?</h1><p class="lead">Pick one or more. Your feed will be stories and words from people who went through it first.</p>
@@ -166,6 +179,9 @@ if(d.view){view=d.view;render();return}
 if(d.filter){filter=d.filter;render();return}
 if("night" in d){view="night";render();return}
 if("more" in d){const f=document.getElementById("feed");f.scrollBy({top:f.clientHeight,behavior:"smooth"});return}
+if(d.play){const c=CARDS.find(x=>x.id===d.play),card=b.closest(".card"),p=b.closest(".player");document.querySelectorAll(".card.playing").forEach(x=>{if(x!==card)stopPlayer(x)});
+p.classList.add("on");p.style.backgroundImage="none";card.classList.add("playing");
+p.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${c.yt}?autoplay=1&playsinline=1&cc_load_policy=1&cc_lang_pref=en&rel=0&modestbranding=1" title="${esc(c.who)} speech" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;return}
 if(d.save){const on=saved.includes(d.save);saved=on?saved.filter(x=>x!==d.save):[...saved,d.save];S.set("saved",saved);document.querySelectorAll(`[data-save="${d.save}"]`).forEach(x=>x.classList.toggle("on",!on));toast(on?"Removed":"Saved");return}
 if(d.copy){const c=CARDS.find(x=>x.id===d.copy);try{navigator.clipboard.writeText(textOf(c)).then(()=>toast("Copied"),()=>toast("Couldn't copy"))}catch(err){toast("Couldn't copy")}return}});
 app.addEventListener("input",e=>{if(e.target.id==="goal")draft=e.target.value});
