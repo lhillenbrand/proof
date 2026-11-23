@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0c1628">
+<meta name="theme-color" content="#060c18">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -21,9 +21,9 @@
    COLOUR and TYPE: deep plum-ink ground, bone text, one coral sunrise accent; Instrument Serif voice, Inter UI
    LAYOUT: one phone-width column, sticky top bar, full-height snap cards */
 :root{color-scheme:light dark;
---bg:light-dark(#f6f8fb,#0c1628);--card:light-dark(#ffffff,#13203a);--ink:light-dark(#121a2b,#eaf0f8);
---soft:light-dark(#556074,#a3b0c6);--line:light-dark(#dfe4ec,#22324f);--acc:light-dark(#d9482a,#ff7a59);
---accbg:light-dark(#fde9e3,#3b2530);--dip:light-dark(#b3bccb,#4b5d7d)}
+--bg:light-dark(#f6f8fb,#060c18);--card:light-dark(#ffffff,#0d1729);--ink:light-dark(#121a2b,#eaf0f8);
+--soft:light-dark(#556074,#9aa8bf);--line:light-dark(#dfe4ec,#1a2740);--acc:light-dark(#d9482a,#ff7a59);
+--accbg:light-dark(#fde9e3,#2e1c26);--dip:light-dark(#b3bccb,#3d4e6d)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 html,body{height:100%}
@@ -41,7 +41,7 @@ header{display:flex;align-items:center;gap:10px;padding:12px 16px 8px;flex:none}
 .chip.on{background:var(--accbg);border-color:var(--acc);color:var(--acc)}
 .feed{flex:1;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none}
 .card{scroll-snap-align:start;scroll-snap-stop:always;height:100%;padding:8px 16px 18px;display:flex}
-.in{flex:1;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 24px 18px;display:flex;flex-direction:column}
+.in{flex:1;overflow-y:auto;scrollbar-width:none;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 24px 18px;display:flex;flex-direction:column}
 .kind{font-size:13px;color:var(--soft);display:flex;gap:8px;align-items:center}
 .kind i{width:6px;height:6px;border-radius:50%;background:var(--acc)}
 .q{font:400 clamp(30px,8.5vw,40px)/1.12 'Instrument Serif',serif;margin:auto 0 18px;text-wrap:balance}
@@ -63,7 +63,8 @@ h2{font:400 clamp(30px,8vw,38px)/1.08 'Instrument Serif',serif;margin:14px 0 18p
 .btn{min-height:48px;padding:10px 22px;border-radius:999px;border:1px solid var(--line);background:transparent;font-weight:500}
 .btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
 .stackb{display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px}
-.screen{flex:1;overflow-y:auto;padding:20px 20px 28px;display:flex;flex-direction:column}
+.screen{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 20px 32px;display:flex;flex-direction:column}
+.screen>*,.in>*{flex-shrink:0}
 .screen h1{font:400 clamp(36px,10vw,48px)/1.05 'Instrument Serif',serif;margin:24px 0 10px;text-wrap:balance}
 .screen .lead{color:var(--soft);margin:0 0 22px}
 .opt{display:flex;gap:14px;align-items:center;text-align:left;width:100%;min-height:64px;padding:14px 16px;margin-bottom:10px;border-radius:16px;border:1px solid var(--line);background:var(--card)}
@@ -88,8 +89,8 @@ label.fl{display:block;font-weight:500;margin:10px 0 6px}label.fl small{color:va
 textarea{width:100%;font:16px/1.4 Inter,system-ui,sans-serif;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;resize:none}
 textarea:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 .linkb{background:none;border:0;padding:0;color:var(--acc);font-weight:500;min-height:44px;text-align:left}
-.player{position:relative;flex:1;min-height:240px;margin:14px 0 12px;border-radius:16px;overflow:hidden;background:#081120 center/cover no-repeat;display:flex;flex-direction:column;justify-content:flex-end}
-.player .scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,17,32,.94) 0%,rgba(8,17,32,.55) 55%,rgba(8,17,32,.25) 100%)}
+.player{position:relative;flex:1;min-height:240px;margin:14px 0 12px;border-radius:16px;overflow:hidden;background:#040913 center/cover no-repeat;display:flex;flex-direction:column;justify-content:flex-end}
+.player .scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,9,19,.94) 0%,rgba(4,9,19,.55) 55%,rgba(4,9,19,.25) 100%)}
 .player .vq{position:relative;color:#f6f1ea;font:400 clamp(26px,7vw,34px)/1.16 'Instrument Serif',serif;margin:0 18px 14px;text-wrap:balance}
 .playb{position:relative;align-self:flex-start;display:flex;align-items:center;gap:8px;min-height:48px;margin:0 18px 18px;padding:10px 20px 10px 16px;border:0;border-radius:999px;background:var(--acc);color:#fff;font-weight:500}
 .playb svg{width:22px;height:22px}
@@ -161,7 +162,7 @@ function render(){
 if(view==="onboard"){app.innerHTML=`<div class="screen"><div class="logo">Proof<b>.</b></div><h1>What are you working toward?</h1><p class="lead">Pick one or more. Your feed will be stories and words from people who went through it first.</p>
 ${THEMES.map(t=>`<button class="opt${pick.includes(t.id)?" on":""}" data-pick="${t.id}" aria-pressed="${pick.includes(t.id)}"><span class="box">${pick.includes(t.id)?I.check:""}</span><span>${esc(t.label)}<small>${esc(t.sub)}</small></span></button>`).join("")}
 <label class="fl" for="goal">In one line, what are you going after? <small>Optional</small></label><textarea id="goal" rows="2" maxlength="140" placeholder="Sign our first ten customers">${esc(draft)}</textarea>
-<div class="err" id="err"></div><button class="btn pri" data-build>Build my feed</button><p class="note">Prototype starter library: ${CARDS.length} stories, quotes and speeches, each with its source.</p></div>`;return}
+<div class="err" id="err"></div><button class="btn pri" data-build>Build my feed</button><p class="note">${CARDS.length} stories, quotes and speeches, each with its source.</p></div>`;return}
 const head=`<header><button class="logo" data-home>Proof<b>.</b></button><span class="streak" aria-label="${streak.n} day streak">${I.sun}${streak.n}</span><button class="icon" data-view="saved" aria-label="Saved">${I.saved}</button><button class="icon" data-edit aria-label="Change themes">${I.gear}</button></header>`;
 if(view==="saved"){const list=CARDS.filter(c=>saved.includes(c.id));app.innerHTML=head+`<div class="screen"><h1>Your saved proof</h1>${list.length?list.map(c=>`<div class="saved"><div class="t">${esc(c.k==="story"?c.h:c.q)}</div><div class="src">${esc(c.who)} · ${esc(c.src)}</div></div>`).join(""):`<p class="lead">Tap the heart on any card to keep it here for the nights you need it most.</p>`}<button class="btn" data-home style="margin-top:12px">Back to feed</button></div>`;return}
 if(view==="night"){app.innerHTML=head+`<div class="screen night"><svg class="moon" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="44" fill="var(--accbg)"/><path d="M74 26a38 38 0 1 0 20 50A32 32 0 0 1 74 26z" fill="var(--acc)"/></svg>${part==="night"||part==="evening"?`<h1>Rest is part of it.</h1><p class="lead">The people in your feed slept too. Tomorrow's another day of pushing through.</p>`:`<h1>Go get it.</h1><p class="lead">${goal?esc(goal)+". ":""}Every story in here had a day like today in it.</p>`}<button class="btn" data-home>Open the feed</button></div>`;return}
