@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#15111a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Proof">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<title>Proof</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: quiet, steady, late-night; a friend handing you evidence, never hype
+   IDEA: a deck of evidence cards, one per screen, swiped like a feed
+   PICTURE: each card ends in a line that dips (the hard part) then climbs (the outcome)
+   COLOUR and TYPE: deep plum-ink ground, bone text, one coral sunrise accent; Instrument Serif voice, Inter UI
+   LAYOUT: one phone-width column, sticky top bar, full-height snap cards */
+:root{color-scheme:light dark;
+--bg:light-dark(#faf8f5,#15111a);--card:light-dark(#ffffff,#1d1824);--ink:light-dark(#1b1720,#efe9e1);
+--soft:light-dark(#5d5663,#b3aab8);--line:light-dark(#e6e1dc,#2e2736);--acc:light-dark(#d9482a,#ff7a59);
+--accbg:light-dark(#fde9e3,#3a2121);--dip:light-dark(#b9b2bd,#5a5162)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.app{max-width:480px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;border-inline:1px solid var(--line);padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px 8px;flex:none}
+.logo{font:400 30px/1 'Instrument Serif',serif;letter-spacing:.3px;margin-right:auto;background:none;border:0;padding:0}
+.logo b{color:var(--acc);font-weight:400}
+.icon{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center}
+.icon svg{width:20px;height:20px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 16px 10px;flex:none;scrollbar-width:none}
+.chip{flex:none;min-height:36px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;font-size:14px;color:var(--soft)}
+.chip.on{background:var(--accbg);border-color:var(--acc);color:var(--acc)}
+.feed{flex:1;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none}
+.card{scroll-snap-align:start;scroll-snap-stop:always;height:100%;padding:8px 16px 18px;display:flex}
+.in{flex:1;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 24px 18px;display:flex;flex-direction:column}
+.kind{font-size:13px;color:var(--soft);display:flex;gap:8px;align-items:center}
+.kind i{width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.q{font:400 clamp(30px,8.5vw,40px)/1.12 'Instrument Serif',serif;margin:auto 0 18px;text-wrap:balance}
+.q.long{font-size:clamp(23px,6.2vw,28px);line-height:1.28}
+.who{font-size:15px;font-weight:500}.src{font-size:13px;color:var(--soft)}
+h2{font:400 clamp(30px,8vw,38px)/1.08 'Instrument Serif',serif;margin:14px 0 18px;text-wrap:balance}
+.beat{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:15.5px}
+.beat span{font-size:13px;color:var(--soft);padding-top:2px}.beat.win span{color:var(--acc)}
+.arc{height:56px;margin-top:auto;width:100%}
+.arc path{fill:none;stroke-width:2.5;stroke-linecap:round}
+.go .arc .up{animation:draw 1.4s ease-out both}
+@keyframes draw{from{stroke-dashoffset:300}to{stroke-dashoffset:0}}
+.acts{display:flex;gap:10px;align-items:center;padding-top:10px}
+.acts .src{margin-right:auto}
+.act{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:transparent;display:grid;place-items:center}
+.act svg{width:20px;height:20px}.act.on{color:var(--acc);border-color:var(--acc)}.act.on svg path{fill:currentColor}
+.pause .in{justify-content:center;text-align:center;align-items:center;gap:6px}
+.pause p{color:var(--soft);max-width:30ch;margin:0 0 18px}
+.btn{min-height:48px;padding:10px 22px;border-radius:999px;border:1px solid var(--line);background:transparent;font-weight:500}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.stackb{display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px}
+.screen{flex:1;overflow-y:auto;padding:20px 20px 28px;display:flex;flex-direction:column}
+.screen h1{font:400 clamp(36px,10vw,48px)/1.05 'Instrument Serif',serif;margin:24px 0 10px;text-wrap:balance}
+.screen .lead{color:var(--soft);margin:0 0 22px}
+.opt{display:flex;gap:14px;align-items:center;text-align:left;width:100%;min-height:64px;padding:14px 16px;margin-bottom:10px;border-radius:16px;border:1px solid var(--line);background:var(--card)}
+.opt .box{flex:none;width:24px;height:24px;border-radius:7px;border:1.5px solid var(--dip);display:grid;place-items:center}
+.opt.on{border-color:var(--acc)}.opt.on .box{background:var(--acc);border-color:var(--acc);color:#fff}
+.opt small{display:block;color:var(--soft);font-size:13px}
+.err{color:var(--acc);font-size:14px;min-height:22px;margin:4px 0}
+.note{font-size:13px;color:var(--soft);margin-top:auto;padding-top:18px}
+.saved{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:16px;margin-bottom:10px}
+.saved .t{font:400 22px/1.2 'Instrument Serif',serif;margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.night{justify-content:center;text-align:center;align-items:center}
+.moon{width:120px;height:120px;margin-bottom:8px}
+.streak{display:flex;align-items:center;gap:5px;min-height:36px;padding:6px 12px;border-radius:999px;background:var(--accbg);color:var(--acc);font-size:13px;font-weight:500}
+.streak svg{width:16px;height:16px}
+.goaltxt{font:italic 400 clamp(26px,7vw,34px)/1.15 'Instrument Serif',serif;margin:0 0 6px;padding-left:14px;border-left:2px solid var(--acc);border-radius:0}
+.hello .soft{color:var(--soft);margin:18px 0 0}
+.vid{display:inline-flex;align-items:center;gap:8px;min-height:44px;margin-top:14px;color:var(--acc);font-weight:500;text-decoration:none;font-size:15px}
+.vid svg{width:20px;height:20px}
+label.fl{display:block;font-weight:500;margin:10px 0 6px}label.fl small{color:var(--soft);font-weight:400}
+textarea{width:100%;font:16px/1.4 Inter,system-ui,sans-serif;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;resize:none}
+textarea:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.linkb{background:none;border:0;padding:0;color:var(--acc);font-weight:500;min-height:44px;text-align:left}
+@media(prefers-reduced-motion:reduce){.go .arc .up{animation:none}.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<div class="toast" id="toast" role="status"></div>
+<script src="cards.js"></script>
+<script>
+{
+const THEMES=[
+{id:"start",label:"Starting a business",sub:"Founders who began with almost nothing"},
+{id:"long",label:"Growing or selling a business",sub:"The long game, and how it paid off"},
+{id:"health",label:"Fighting an illness",sub:"People who came back from the hardest news"},
+{id:"belief",label:"Believing in yourself",sub:"Rejection, doubt, and doing it anyway"},
+{id:"heart",label:"Getting over heartbreak",sub:"Loss, breakups, and finding your way back"},
+{id:"leap",label:"Buying a home or a big financial leap",sub:"People who bet on themselves and their future"}];
+
+const CARDS=window.PROOF_CARDS||[];
+
+const S={get(k,d){try{const v=localStorage.getItem("proof_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("proof_"+k,JSON.stringify(v))}catch(e){}}};
+let chosen=S.get("themes",[]),saved=S.get("saved",[]),goal=S.get("goal",""),draft=goal,filter="all",view=chosen.length?"feed":"onboard",shown=0,pick=[...chosen];
+const today=new Date().toDateString(),yest=new Date(Date.now()-864e5).toDateString();
+let streak=S.get("streak",{d:"",n:0});if(streak.d!==today){streak={d:today,n:streak.d===yest?streak.n+1:1};S.set("streak",streak)}
+const hr=new Date().getHours(),part=hr<5||hr>=21?"night":hr<12?"morning":hr<17?"afternoon":"evening";
+const HELLO={morning:["Good morning","Here's what you're going after today."],afternoon:["Good afternoon","Halfway through the day. Still going after this."],evening:["Good evening","The day's winding down. Remember what it's for."],night:["Late night","Can't switch off? Start here."]};
+const app=document.getElementById("app"),toastEl=document.getElementById("toast");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const I={heart:'<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+copy:'<svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
+saved:'<svg viewBox="0 0 24 24"><path d="M7 4h10v16l-5-3.5L7 20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+gear:'<svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="10" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
+sun:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+play:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 8.5l5.5 3.5-5.5 3.5z" fill="currentColor"/></svg>',
+check:'<svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
+const arc='<svg class="arc" viewBox="0 0 300 56" preserveAspectRatio="none" aria-hidden="true"><path d="M2 22 C40 22 60 50 100 50 S150 44 170 34" stroke="var(--dip)"/><path class="up" d="M170 34 C200 20 240 10 298 4" stroke="var(--acc)" stroke-dasharray="300"/></svg>';
+const toast=m=>{toastEl.textContent=m;toastEl.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>toastEl.classList.remove("show"),1600)};
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pool=()=>CARDS.filter(c=>c.t.some(t=>filter==="all"?chosen.includes(t):t===filter));
+const textOf=c=>c.k==="story"?`${c.h}. ${c.hard} ${c.turn} ${c.win}`:`"${c.q}" — ${c.who}`;
+
+function cardHTML(c){
+const vid=c.vid?`<a class="vid" href="https://www.youtube.com/results?search_query=${encodeURIComponent(c.vid)}" target="_blank" rel="noopener">${I.play}Watch on YouTube</a>`:"";
+const on=saved.includes(c.id),acts=vid+`<div class="acts"><span class="src">${esc(c.src)}</span><button class="act${on?" on":""}" data-save="${c.id}" aria-label="Save">${I.heart}</button><button class="act" data-copy="${c.id}" aria-label="Copy text">${I.copy}</button></div>`;
+if(c.k==="story")return `<section class="card"><div class="in"><div class="kind"><i></i>Story · ${esc(c.who)}</div><h2>${esc(c.h)}</h2>
+<div class="beat"><span>The hard part</span><div>${esc(c.hard)}</div></div><div class="beat"><span>The turn</span><div>${esc(c.turn)}</div></div><div class="beat win"><span>What happened</span><div>${esc(c.win)}</div></div>${arc}${acts}</div></section>`;
+return `<section class="card"><div class="in"><div class="kind"><i></i>${c.k==="speech"?"Speech":"Quote"}</div><p class="q${c.q.length>110?" long":""}">${esc(c.q)}</p><div class="who">${esc(c.who)}</div>${arc}${acts}</div></section>`}
+
+function pauseHTML(n){const nt=part==="night"||part==="evening",g=goal?` Now take it to: <em>${esc(goal)}</em>`:"";
+return `<section class="card pause"><div class="in"><div class="kind"><i></i>${n} cards in</div><h2>${nt?"That's a lot of proof.":"You've got what you need."}</h2><p>Every one of them had a stretch that felt like yours.${g}</p><div class="stackb"><button class="btn pri" data-more>Keep going</button><button class="btn" data-night>${nt?"I'm done for tonight":"Go do the hard part"}</button></div></div></section>`}
+function helloHTML(){const[h,l]=HELLO[part],s=streak.n>1?`Day ${streak.n} in a row. Showing up is the whole game.`:"Day one. Come back tomorrow and start a streak.";
+return `<section class="card hello"><div class="in"><div class="kind"><i></i>${h}</div><h2>${l}</h2>${goal?`<p class="goaltxt">${esc(goal)}</p><div class="src">Your goal</div>`:`<button class="linkb" data-edit>Write your goal in one line</button>`}<p class="soft">${s}</p>${arc}<div class="acts"><span class="src">Swipe up for today's proof</span></div></div></section>`}
+
+function addBatch(feed){let p=shuffle(pool());if(!p.length)return;const batch=p.slice(0,10);shown+=batch.length;feed.insertAdjacentHTML("beforeend",batch.map(cardHTML).join("")+pauseHTML(shown));watch(feed)}
+let io;
+function watch(feed){io=io||new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("go")}),{threshold:.6});feed.querySelectorAll(".card:not([data-w])").forEach(c=>{c.dataset.w=1;io.observe(c)})}
+
+function render(){
+if(view==="onboard"){app.innerHTML=`<div class="screen"><div class="logo">Proof<b>.</b></div><h1>What are you working toward?</h1><p class="lead">Pick one or more. Your feed will be stories and words from people who went through it first.</p>
+${THEMES.map(t=>`<button class="opt${pick.includes(t.id)?" on":""}" data-pick="${t.id}" aria-pressed="${pick.includes(t.id)}"><span class="box">${pick.includes(t.id)?I.check:""}</span><span>${esc(t.label)}<small>${esc(t.sub)}</small></span></button>`).join("")}
+<label class="fl" for="goal">In one line, what are you going after? <small>Optional</small></label><textarea id="goal" rows="2" maxlength="140" placeholder="Sign our first ten customers">${esc(draft)}</textarea>
+<div class="err" id="err"></div><button class="btn pri" data-build>Build my feed</button><p class="note">Prototype starter library: ${CARDS.length} stories, quotes and speeches, each with its source.</p></div>`;return}
+const head=`<header><button class="logo" data-home>Proof<b>.</b></button><span class="streak" aria-label="${streak.n} day streak">${I.sun}${streak.n}</span><button class="icon" data-view="saved" aria-label="Saved">${I.saved}</button><button class="icon" data-edit aria-label="Change themes">${I.gear}</button></header>`;
+if(view==="saved"){const list=CARDS.filter(c=>saved.includes(c.id));app.innerHTML=head+`<div class="screen"><h1>Your saved proof</h1>${list.length?list.map(c=>`<div class="saved"><div class="t">${esc(c.k==="story"?c.h:c.q)}</div><div class="src">${esc(c.who)} · ${esc(c.src)}</div></div>`).join(""):`<p class="lead">Tap the heart on any card to keep it here for the nights you need it most.</p>`}<button class="btn" data-home style="margin-top:12px">Back to feed</button></div>`;return}
+if(view==="night"){app.innerHTML=head+`<div class="screen night"><svg class="moon" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="44" fill="var(--accbg)"/><path d="M74 26a38 38 0 1 0 20 50A32 32 0 0 1 74 26z" fill="var(--acc)"/></svg>${part==="night"||part==="evening"?`<h1>Rest is part of it.</h1><p class="lead">The people in your feed slept too. Tomorrow's another day of pushing through.</p>`:`<h1>Go get it.</h1><p class="lead">${goal?esc(goal)+". ":""}Every story in here had a day like today in it.</p>`}<button class="btn" data-home>Open the feed</button></div>`;return}
+const mine=THEMES.filter(t=>chosen.includes(t.id));
+app.innerHTML=head+`<div class="chips">${mine.length>1?`<button class="chip${filter==="all"?" on":""}" data-filter="all">All mine</button>`:""}${mine.map(t=>`<button class="chip${filter===t.id||mine.length===1?" on":""}" data-filter="${t.id}">${esc(t.label)}</button>`).join("")}</div><div class="feed" id="feed"></div>`;
+const feed=document.getElementById("feed");shown=0;feed.innerHTML=helloHTML();addBatch(feed);
+feed.addEventListener("scroll",()=>{if(feed.scrollTop+feed.clientHeight*2>feed.scrollHeight)addBatch(feed)},{passive:true})}
+
+app.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const d=b.dataset;
+if(d.pick){pick=pick.includes(d.pick)?pick.filter(x=>x!==d.pick):[...pick,d.pick];render();return}
+if("build" in d){if(!pick.length){document.getElementById("err").textContent="Pick at least one to build your feed.";return}chosen=[...pick];S.set("themes",chosen);goal=draft.trim();S.set("goal",goal);filter="all";view="feed";render();return}
+if("edit" in d){pick=[...chosen];draft=goal;view="onboard";render();return}
+if("home" in d){view=chosen.length?"feed":"onboard";render();return}
+if(d.view){view=d.view;render();return}
+if(d.filter){filter=d.filter;render();return}
+if("night" in d){view="night";render();return}
+if("more" in d){const f=document.getElementById("feed");f.scrollBy({top:f.clientHeight,behavior:"smooth"});return}
+if(d.save){const on=saved.includes(d.save);saved=on?saved.filter(x=>x!==d.save):[...saved,d.save];S.set("saved",saved);document.querySelectorAll(`[data-save="${d.save}"]`).forEach(x=>x.classList.toggle("on",!on));toast(on?"Removed":"Saved");return}
+if(d.copy){const c=CARDS.find(x=>x.id===d.copy);try{navigator.clipboard.writeText(textOf(c)).then(()=>toast("Copied"),()=>toast("Couldn't copy"))}catch(err){toast("Couldn't copy")}return}});
+app.addEventListener("input",e=>{if(e.target.id==="goal")draft=e.target.value});
+render();
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+}
+</script>
+</body>
+</html>
