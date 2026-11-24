@@ -40,21 +40,21 @@ header{display:flex;align-items:center;gap:10px;padding:12px 16px 8px;flex:none}
 .chip{flex:none;min-height:36px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;font-size:14px;color:var(--soft)}
 .chip.on{background:var(--accbg);border-color:var(--acc);color:var(--acc)}
 .feed{flex:1;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none}
-.card{scroll-snap-align:start;scroll-snap-stop:always;height:100%;padding:8px 16px 18px;display:flex}
-.in{flex:1;overflow-y:auto;scrollbar-width:none;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 24px 18px;display:flex;flex-direction:column}
+.card{scroll-snap-align:start;min-height:100%;padding:8px 16px 18px;display:flex}
+.in{flex:1;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 20px 14px;display:flex;flex-direction:column}
 .kind{font-size:13px;color:var(--soft);display:flex;gap:8px;align-items:center}
 .kind i{width:6px;height:6px;border-radius:50%;background:var(--acc)}
 .q{font:400 clamp(30px,8.5vw,40px)/1.12 'Instrument Serif',serif;margin:auto 0 18px;text-wrap:balance}
 .q.long{font-size:clamp(23px,6.2vw,28px);line-height:1.28}
 .who{font-size:15px;font-weight:500}.src{font-size:13px;color:var(--soft)}
-h2{font:400 clamp(30px,8vw,38px)/1.08 'Instrument Serif',serif;margin:14px 0 18px;text-wrap:balance}
-.beat{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:15.5px}
+h2{font:400 clamp(27px,7.2vw,34px)/1.08 'Instrument Serif',serif;margin:10px 0 12px;text-wrap:balance}
+.beat{display:grid;grid-template-columns:88px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.45}
 .beat span{font-size:13px;color:var(--soft);padding-top:2px}.beat.win span{color:var(--acc)}
-.arc{height:56px;margin-top:auto;width:100%}
+.arc{height:40px;margin-top:auto;padding-top:8px;width:100%}
 .arc path{fill:none;stroke-width:2.5;stroke-linecap:round}
 .go .arc .up{animation:draw 1.4s ease-out both}
 @keyframes draw{from{stroke-dashoffset:300}to{stroke-dashoffset:0}}
-.acts{display:flex;gap:10px;align-items:center;padding-top:10px}
+.acts{display:flex;gap:10px;align-items:center;padding-top:6px}
 .acts .src{margin-right:auto}
 .act{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:transparent;display:grid;place-items:center}
 .act svg{width:20px;height:20px}.act.on{color:var(--acc);border-color:var(--acc)}.act.on svg path{fill:currentColor}
@@ -65,6 +65,7 @@ h2{font:400 clamp(30px,8vw,38px)/1.08 'Instrument Serif',serif;margin:14px 0 18p
 .stackb{display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px}
 .screen{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 20px 32px;display:flex;flex-direction:column}
 .screen>*,.in>*{flex-shrink:0}
+.feed{overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
 .screen h1{font:400 clamp(36px,10vw,48px)/1.05 'Instrument Serif',serif;margin:24px 0 10px;text-wrap:balance}
 .screen .lead{color:var(--soft);margin:0 0 22px}
 .opt{display:flex;gap:14px;align-items:center;text-align:left;width:100%;min-height:64px;padding:14px 16px;margin-bottom:10px;border-radius:16px;border:1px solid var(--line);background:var(--card)}
