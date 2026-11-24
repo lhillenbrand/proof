@@ -1,5 +1,5 @@
 // Keeps Proof working offline. Bump VERSION whenever you change the app or the cards.
-const VERSION = "proof-v5";
+const VERSION = "proof-v6";
 const FILES = ["./", "index.html", "cards.js", "manifest.webmanifest", "icons/icon-180.png", "icons/icon-192.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k))))); self.clients.claim(); });
