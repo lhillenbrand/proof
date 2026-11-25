@@ -102,7 +102,12 @@ textarea:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 .capnote{display:none;font-size:13px;color:var(--soft);margin:0 0 6px}.playing .capnote{display:block}
 .lead2{color:var(--soft);margin:0 0 18px;font-size:16px}
 .callb{display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px}
-@media(prefers-reduced-motion:reduce){.go .arc .up{animation:none}.toast{transition:none}}
+.tog{display:flex;align-items:center;gap:14px;justify-content:space-between;margin:18px 0 4px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.tog .tt{display:block;font-weight:500}.tog small{display:block;color:var(--soft);font-size:13px;margin-top:2px}
+.switch{flex:none;width:52px;height:32px;border-radius:999px;border:0;background:var(--dip);position:relative;padding:0}
+.switch span{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;transition:transform .2s}
+.switch.on{background:var(--acc)}.switch.on span{transform:translateX(20px)}
+@media(prefers-reduced-motion:reduce){.switch span{transition:none}.go .arc .up{animation:none}.toast{transition:none}}
 </style>
 </head>
 <body>
@@ -123,7 +128,7 @@ const THEMES=[
 const CARDS=window.PROOF_CARDS||[],HELP=window.PROOF_HELP||{};
 
 const S={get(k,d){try{const v=localStorage.getItem("proof_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("proof_"+k,JSON.stringify(v))}catch(e){}}};
-let chosen=S.get("themes",[]),saved=S.get("saved",[]),goal=S.get("goal",""),draft=goal,filter="all",view=chosen.length?"feed":"onboard",shown=0,pick=[...chosen];
+let faith=!!S.get("faith",false),faithPick=faith,chosen=S.get("themes",[]),saved=S.get("saved",[]),goal=S.get("goal",""),draft=goal,filter="all",view=chosen.length?"feed":"onboard",shown=0,pick=[...chosen];
 chosen=chosen.filter(id=>THEMES.some(t=>t.id===id));pick=pick.filter(id=>chosen.includes(id));if(!chosen.length)view="onboard";S.set("themes",chosen);
 const today=new Date().toDateString(),yest=new Date(Date.now()-864e5).toDateString();
 let streak=S.get("streak",{d:"",n:0});if(streak.d!==today){streak={d:today,n:streak.d===yest?streak.n+1:1};S.set("streak",streak)}
@@ -141,8 +146,8 @@ check:'<svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 12.5l4.5 4.5L
 const arc='<svg class="arc" viewBox="0 0 300 56" preserveAspectRatio="none" aria-hidden="true"><path d="M2 22 C40 22 60 50 100 50 S150 44 170 34" stroke="var(--dip)"/><path class="up" d="M170 34 C200 20 240 10 298 4" stroke="var(--acc)" stroke-dasharray="300"/></svg>';
 const toast=m=>{toastEl.textContent=m;toastEl.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>toastEl.classList.remove("show"),1600)};
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-const pool=()=>CARDS.filter(c=>c.t.some(t=>filter==="all"?chosen.includes(t):t===filter));
-const textOf=c=>c.k==="story"?`${c.h}. ${c.hard} ${c.turn} ${c.win}`:`"${c.q}" — ${c.who}`;
+const pool=()=>CARDS.filter(c=>(faith||!c.faith)&&c.t.some(t=>filter==="all"?chosen.includes(t):t===filter));
+const textOf=c=>c.k==="story"?`${c.h}. ${c.hard} ${c.turn} ${c.win}`:c.k==="scripture"?`"${c.q}" — ${c.who} (${c.src})`:`"${c.q}" — ${c.who}`;
 
 function cardHTML(c){
 const vid=c.vid?`<a class="vid" href="https://www.youtube.com/results?search_query=${encodeURIComponent(c.vid)}" target="_blank" rel="noopener">${I.play}Watch on YouTube</a>`:"";
@@ -150,7 +155,7 @@ const on=saved.includes(c.id),acts=vid+`<div class="acts"><span class="src">${es
 if(c.k==="story")return `<section class="card"><div class="in"><div class="kind"><i></i>Story · ${esc(c.who)}</div><h2>${esc(c.h)}</h2>
 <div class="beat"><span>The hard part</span><div>${esc(c.hard)}</div></div><div class="beat"><span>The turn</span><div>${esc(c.turn)}</div></div><div class="beat win"><span>What happened</span><div>${esc(c.win)}</div></div>${arc}${acts}</div></section>`;
 if(c.yt)return `<section class="card" data-id="${c.id}"><div class="in"><div class="kind"><i></i>Speech · ${esc(c.who)}</div>${posterHTML(c)}<p class="pinned">${esc(c.q)}</p><p class="capnote">Captions are on. Tap CC on the video to turn them off.</p><div class="who">${esc(c.who)}</div>${acts}</div></section>`;
-return `<section class="card"><div class="in"><div class="kind"><i></i>${c.k==="speech"?"Speech":"Quote"}</div><p class="q${c.q.length>110?" long":""}">${esc(c.q)}</p><div class="who">${esc(c.who)}</div>${arc}${acts}</div></section>`}
+return `<section class="card"><div class="in"><div class="kind"><i></i>${c.k==="speech"?"Speech":c.k==="scripture"?"Scripture":c.faith?"Faith":"Quote"}</div><p class="q${c.q.length>110?" long":""}">${esc(c.q)}</p><div class="who">${esc(c.who)}</div>${arc}${acts}</div></section>`}
 
 function posterHTML(c){return `<div class="player" style="background-image:url(https://i.ytimg.com/vi/${c.yt}/hqdefault.jpg)"><div class="scrim"></div><p class="vq">${esc(c.q)}</p><button class="playb" data-play="${c.id}">${I.play}Watch the speech</button></div>`}
 function stopPlayer(card){const c=CARDS.find(x=>x.id===card.dataset.id);if(!c)return;card.classList.remove("playing");card.querySelector(".player").outerHTML=posterHTML(c)}
@@ -168,6 +173,7 @@ function render(){
 if(view==="onboard"){app.innerHTML=`<div class="screen"><div class="logo">Proof<b>.</b></div><h1>What are you working toward?</h1><p class="lead">Pick one or more. Your feed will be stories and words from people who went through it first.</p>
 ${THEMES.map(t=>`<button class="opt${pick.includes(t.id)?" on":""}" data-pick="${t.id}" aria-pressed="${pick.includes(t.id)}"><span class="box">${pick.includes(t.id)?I.check:""}</span><span>${esc(t.label)}<small>${esc(t.sub)}</small></span></button>`).join("")}
 <label class="fl" for="goal">In one line, what are you going after? <small>Optional</small></label><textarea id="goal" rows="2" maxlength="140" placeholder="Sign our first ten customers">${esc(draft)}</textarea>
+<div class="tog"><div><span class="tt">Faith-based encouragement</span><small>Scripture and words from pastors like Joel Osteen, Rick Warren and Billy Graham, mixed into your themes.</small></div><button class="switch${faithPick?" on":""}" role="switch" aria-checked="${faithPick}" aria-label="Faith-based encouragement" data-faith><span></span></button></div>
 <div class="err" id="err"></div><button class="btn pri" data-build>Build my feed</button><p class="note">${CARDS.length} stories, quotes and speeches, each with its source.</p></div>`;return}
 const head=`<header><button class="logo" data-home>Proof<b>.</b></button><span class="streak" aria-label="${streak.n} day streak">${I.sun}${streak.n}</span><button class="icon" data-view="saved" aria-label="Saved">${I.saved}</button><button class="icon" data-edit aria-label="Change themes">${I.gear}</button></header>`;
 if(view==="saved"){const list=CARDS.filter(c=>saved.includes(c.id));app.innerHTML=head+`<div class="screen"><h1>Your saved proof</h1>${list.length?list.map(c=>`<div class="saved"><div class="t">${esc(c.k==="story"?c.h:c.q)}</div><div class="src">${esc(c.who)} · ${esc(c.src)}</div></div>`).join(""):`<p class="lead">Tap the heart on any card to keep it here for the nights you need it most.</p>`}<button class="btn" data-home style="margin-top:12px">Back to feed</button></div>`;return}
@@ -178,9 +184,10 @@ const feed=document.getElementById("feed");shown=0;feed.innerHTML=helloHTML()+Ob
 feed.addEventListener("scroll",()=>{if(feed.scrollTop+feed.clientHeight*2>feed.scrollHeight)addBatch(feed)},{passive:true})}
 
 app.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const d=b.dataset;
+if("faith" in d){faithPick=!faithPick;render();return}
 if(d.pick){pick=pick.includes(d.pick)?pick.filter(x=>x!==d.pick):[...pick,d.pick];render();return}
-if("build" in d){if(!pick.length){document.getElementById("err").textContent="Pick at least one to build your feed.";return}chosen=[...pick];S.set("themes",chosen);goal=draft.trim();S.set("goal",goal);filter="all";view="feed";render();return}
-if("edit" in d){pick=[...chosen];draft=goal;view="onboard";render();return}
+if("build" in d){if(!pick.length){document.getElementById("err").textContent="Pick at least one to build your feed.";return}chosen=[...pick];S.set("themes",chosen);faith=faithPick;S.set("faith",faith);goal=draft.trim();S.set("goal",goal);filter="all";view="feed";render();return}
+if("edit" in d){pick=[...chosen];draft=goal;faithPick=faith;view="onboard";render();return}
 if("home" in d){view=chosen.length?"feed":"onboard";render();return}
 if(d.view){view=d.view;render();return}
 if(d.filter){filter=d.filter;render();return}
